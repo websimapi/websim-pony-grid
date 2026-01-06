@@ -3,6 +3,7 @@
   - Loads items in pages
   - Uses IntersectionObserver to append more when near the bottom
   - Images are reused (same source) if only one available
+  - Recycles early cards as new ones are appended so the list loops continuously
 */
 
 const GRID = document.getElementById('grid');
@@ -50,6 +51,12 @@ const PAGE_SIZE = 18;
 let page = 0;
 let loading = false;
 
+// we keep a running total of items in the grid and limit total DOM children.
+// when total exceeds MAX_ITEMS we remove older cards from the start so the stream loops.
+let totalItems = 0;
+const MAX_MULTIPLIER = 8; // how many pages of items to keep before trimming
+const MAX_ITEMS = PAGE_SIZE * MAX_MULTIPLIER;
+
 // produce a pseudo-random variation to make tiles look varied (flips, background)
 function makeCard(src, idx){
   const el = document.createElement('div');
@@ -63,6 +70,24 @@ function makeCard(src, idx){
   if (idx % 3 === 0) img.style.transform = 'scaleX(-1)';
   el.appendChild(img);
   return el;
+}
+
+function recycleIfNeeded(){
+  if (totalItems <= MAX_ITEMS) return;
+  const removeCount = PAGE_SIZE; // remove one page worth of old cards
+  // gather removed nodes to calculate visual height adjustment
+  const removed = [];
+  for (let i = 0; i < removeCount && GRID.firstChild; i++){
+    removed.push(GRID.firstChild);
+    GRID.removeChild(GRID.firstChild);
+  }
+  totalItems -= removed.length;
+  // compute total removed height to adjust scroll so user doesn't see a jump
+  const removedHeight = removed.reduce((sum, node) => sum + (node.offsetHeight || 0), 0);
+  if (removedHeight > 0){
+    // scroll up by removed height to keep viewport visually steady
+    window.scrollBy({ top: -removedHeight, left: 0, behavior: 'instant' });
+  }
 }
 
 function loadPage(){
@@ -79,7 +104,10 @@ function loadPage(){
         const src = available[idx % available.length];
         const card = makeCard(src, idx);
         GRID.appendChild(card);
+        totalItems++;
       }
+      // enforce recycling so DOM doesn't grow forever and content loops
+      recycleIfNeeded();
       page++;
       loading = false;
       LOADER.hidden = true;
