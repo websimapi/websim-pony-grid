@@ -8,12 +8,38 @@
 const GRID = document.getElementById('grid');
 const LOADER = document.getElementById('loader');
 
-// collect available pony assets in root by convention
-// list of known filenames (in a real project you might fetch a manifest)
-const available = [
-  // include any file in root that starts with "pony"
-  '/pony-twocolor-image-only-use-pure-black-.png'
-].filter(Boolean);
+/*
+  Collect available pony assets in root by convention.
+  We can't list the server directory from the browser, so include a small
+  manifest of known root files and filter those that contain "pony".
+  Add any new root filenames to this manifest as needed.
+*/
+const rootFiles = [
+  '/simple-cartoon-pony-paper-doll-full-body.png',
+  '/pony-twocolor-image-only-use-pure-black-.png',
+  '/pony-twocolor-image-only-use-pure-black- (1).png',
+  '/simple-cartoon-pony-paper-doll-full-body (1).png',
+  '/pony-twocolor-image-only-use-pure-black-.png', /* kept in case of duplicates */
+  '/singlecolor-image-only-solid-pure-black-.png',
+  '/singlecolor-silhouette-only-solid-pure-b.png',
+  '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic-.png',
+  '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic--fix-the-eyes-to-be-j-add-a-flowing-light-.png',
+  '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic--fix-the-eyes-to-be-j.png',
+  '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic--fix-the-eyes-to-be-j-define-a-hyper-reali-fix-the-mane-to-be-m.png',
+  '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic--fix-the-eyes-to-be-j-define-a-hyper-reali.png',
+  '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic--fix-the-eyes-to-be-j-add-a-flowing-gold-m.png',
+  '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic--fix-the-eyes-to-be-j-add-a-flowing-golden.png',
+  '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic--fix-the-eyes-to-be-j-add-a-flowing-golden (1).png',
+  '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic--fix-the-eyes-to-be-j-add-a-flowing-golden (1)-make-the-horse-white.png',
+  '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic--fix-the-eyes-to-be-j-add-a-flowing-golden (1)-make-the-horse-white-change-horse-to-be-g.png',
+  '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic--fix-the-eyes-to-be-j-add-a-flowing-golden (1)-make-the-horse-white-change-horse-to-be-g-now-make-it-have-a-s.png',
+  '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic--fix-the-eyes-to-be-j-add-a-flowing-golden (1)-make-the-horse-white-change-horse-to-be-g-now-make-it-have-a-s-now-add-a-hyper-real.jpg',
+  '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic--fix-the-eyes-to-be-j-add-a-solid-golden-m.png',
+  '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic--fix-the-eyes-to-be-j-add-a-flowing-golden (1).png'
+];
+
+// pick any path that includes "pony" (case-insensitive)
+const available = rootFiles.filter(p => /pony/i.test(p)).filter(Boolean);
 
 if (!available.length) {
   GRID.innerHTML = '<div style="padding:20px;color:#666">No pony assets found.</div>';
