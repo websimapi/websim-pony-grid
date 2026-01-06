@@ -39,8 +39,7 @@ const rootFiles = [
   '/singlecolor-silhouette-only-solid-pure-b-add-hyper-realistic--fix-the-eyes-to-be-j-add-a-flowing-golden (1).png'
 ];
 
-// pick any path that includes "pony" (case-insensitive)
-const available = rootFiles.filter(p => /pony/i.test(p)).filter(Boolean);
+const available = rootFiles.filter(Boolean);
 
 if (!available.length) {
   GRID.innerHTML = '<div style="padding:20px;color:#666">No pony assets found.</div>';
